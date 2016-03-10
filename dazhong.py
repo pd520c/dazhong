@@ -2,6 +2,7 @@ import requests
 import pymysql
 import time
 import random
+import re
 from bs4 import BeautifulSoup
 conn = pymysql.connect(
     host = 'localhost',
@@ -30,10 +31,17 @@ def list2string(l):
     return string
 
 def getsoup():
-    soup = ''
+    string = ''
     for i in range(1,51):
         url = baseurl+sid+keyword+str(i)+aimstring
-        soup = soup+ list2string(BeautifulSoup(gethtml(url),"html5lib").find_all("div",attrs={"class":"pic"}))
-    return soup
+        string = string+list2string(BeautifulSoup(gethtml(url),"html5lib").find_all("div",attrs={"class":"pic"}))
+    return string
 
-print(getsoup())
+def getshoplist():
+    shoplist = [] 
+    p = BeautifulSoup(getsoup(),"html5lib").find_all('a')
+    for link in p:
+        shoplist.append('http://www.dianping.com'+link.get('href'))
+    return shoplist    
+
+print(getshoplist())
