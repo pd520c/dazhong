@@ -4,19 +4,32 @@ import time
 import random
 import re
 from bs4 import BeautifulSoup
-conn = pymysql.connect(
-    host = 'localhost',
-    port = 3306,
-    user = 'root',
-    passwd = '',
-    db = 'dazhong',
-    charset = 'utf8',
-)
-cur = conn.cursor()
 baseurl = 'http://www.dianping.com/search/keyword/'
 sid = '1/'
 keyword = '0_蟹/p'
 aimstring = '?aid=2717353&cpt=2717353&tc=1'
+
+def connDB():
+    conn = pymysql.connect(host = 'localhost',
+                           port = 3306,
+                           user = 'root',
+                           passwd = '',
+                           db = 'dazhong',
+                           charset = 'utf8',)
+    cur = conn.cursor()
+    return (conn,cur)
+
+def connClose(conn,cur):
+    cur.close();
+    conn.close();
+
+def exeUpdate(cur,sql):
+    sta=cur.execute(sql);
+    return(sta);
+
+def exeQuery(cur,sql):
+    cur.execute(sql);
+    return (cur);
 
 def gethtml(url):
     ua = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36'}
@@ -44,4 +57,16 @@ def getshoplist():
         shoplist.append('http://www.dianping.com'+link.get('href'))
     return shoplist    
 
-print(getshoplist())
+def insertshoplist():
+    conn,cur=connDB()
+    for shoplist in getshoplist():
+        shopurl = str(shoplist)
+        sta=cur.execute("INSERT INTO shopindex(shopurl) VALUES (%s)",(shopurl))
+        if(sta==1):
+            print('data insert successed')
+            conn.commit()
+        else:
+            print('data insert failed')
+    conn.close()
+
+insertshoplist()
