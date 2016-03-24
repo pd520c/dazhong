@@ -23,14 +23,6 @@ def connClose(conn,cur):
     cur.close();
     conn.close();
 
-def exeUpdate(cur,sql):
-    sta=cur.execute(sql);
-    return(sta);
-
-def exeQuery(cur,sql):
-    cur.execute(sql);
-    return (cur);
-
 def gethtml(url):
     ua = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36'}
     response = requests.get(url,headers = ua)
@@ -67,6 +59,16 @@ def insertshoplist():
             conn.commit()
         else:
             print('data insert failed')
-    conn.close()
+    connClose(conn,cur)
 
-insertshoplist()
+def queryshoplist():
+    conn,cur = connDB()
+    shoplist = []
+    sql = "SELECT shopurl FROM shopindex" 
+    cur.execute(sql)
+    for item in cur:
+        shoplist.append(item[0])
+    connClose(conn,cur)
+    return shoplist
+
+print(queryshoplist())
