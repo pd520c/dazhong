@@ -23,6 +23,9 @@ def connClose(conn,cur):
     cur.close();
     conn.close();
 
+def getcurDate():
+    return time.strftime('%Y-%m-%d',time.localtime(time.time()))
+
 def gethtml(url):
     ua = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36'}
     response = requests.get(url,headers = ua)
@@ -34,6 +37,9 @@ def list2string(l):
         for item in l:
             string = string + str(item)
     return string
+
+def numfromString(s):
+    return re.findall(r'(\w*[0-9]+)\w*',s)
 
 def getsoup():
     string = ''
@@ -71,4 +77,13 @@ def queryshoplist():
     connClose(conn,cur)
     return shoplist
 
-print(queryshoplist())
+for item in queryshoplist():
+    shopname = BeautifulSoup(gethtml(item),"html5lib").h1.contents[0]
+    addresstring = list2string(BeautifulSoup(gethtml(item),"html5lib").find_all("span",attrs={"class":"item","itemprop":"street-address"}))
+    pricestring = list2string(BeautifulSoup(gethtml(item),"html5lib").find_all("div",attrs={"class":"brief-info"}))
+    price = BeautifulSoup(pricestring,"html5lib").find_all("span")
+    address = BeautifulSoup(addresstring,"html5lib").span['title']
+    comment = BeautifulSoup(gethtml(item),"html5lib").find_all("span",attrs={"class":"sub-title"})
+    print(str(shopname),str(address),numfromString(str(price[0])),numfromString(str(comment[1])),getcurDate())
+
+
