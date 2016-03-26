@@ -78,12 +78,16 @@ def queryshoplist():
     return shoplist
 
 for item in queryshoplist():
-    shopname = BeautifulSoup(gethtml(item),"html5lib").h1.contents[0]
-    addresstring = list2string(BeautifulSoup(gethtml(item),"html5lib").find_all("span",attrs={"class":"item","itemprop":"street-address"}))
-    pricestring = list2string(BeautifulSoup(gethtml(item),"html5lib").find_all("div",attrs={"class":"brief-info"}))
-    price = BeautifulSoup(pricestring,"html5lib").find_all("span")
-    address = BeautifulSoup(addresstring,"html5lib").span['title']
-    comment = BeautifulSoup(gethtml(item),"html5lib").find_all("span",attrs={"class":"sub-title"})
-    print(str(shopname),str(address),numfromString(str(price[0])),numfromString(str(comment[1])),getcurDate())
+    try:
+        shopname = BeautifulSoup(gethtml(item),"html5lib").h1.contents[0]
+        addresstring = list2string(BeautifulSoup(gethtml(item),"html5lib").find_all("span",attrs={"class":"item","itemprop":"street-address"}))
+        pricestring = list2string(BeautifulSoup(gethtml(item),"html5lib").find_all("div",attrs={"class":"brief-info"}))
+        price = BeautifulSoup(pricestring,"html5lib").find_all("span")
+        address = BeautifulSoup(addresstring,"html5lib").span['title']
+        comment = BeautifulSoup(gethtml(item),"html5lib").find_all("span",attrs={"class":"sub-title"})
+        
+        print(str(shopname),str(address),numfromString(str(price[0])),numfromString(str(comment[1])),getcurDate())
+    except:
+        print('error')
 
 
