@@ -67,9 +67,19 @@ def list2string(l):
 def numfromString(s):
     return int(re.findall(r'(\w*[0-9]+)\w*',s)[0])
 
+def checkrepeat(item):
+    conn,cur = connDB()
+    sql = "SELECT shopurl FROM shopindex WHERE shopurl = %s" 
+    df = cur.execute(sql,item)
+    if df==0:
+        return False
+    else:
+        return True
+    
 '''
 getsoup()和getshoplist()获取店铺的URL列表
 '''
+
 def getsoup():
     string = ''
     for i in range(1,51):
@@ -91,12 +101,15 @@ def insertshoplist():
     conn,cur=connDB()
     for shoplist in getshoplist():
         shopurl = str(shoplist)
-        sta=cur.execute("INSERT INTO shopindex(shopurl) VALUES (%s)",(shopurl))
-        if(sta==1):
-            print('data insert successed')
-            conn.commit()
+        if checkrepeat(shopurl)==False:
+            sta=cur.execute("INSERT INTO shopindex(shopurl) VALUES (%s)",(shopurl))
+            if(sta==1):
+                print('data insert successed')
+                conn.commit()
+            else:
+                print('data insert failed')
         else:
-            print('data insert failed')
+            print('data repeat')
     connClose(conn,cur)
 
 '''
@@ -147,4 +160,5 @@ def main():
 
 
 if __name__=="__main__":
+    insertshoplist()
     main()
