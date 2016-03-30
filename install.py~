@@ -17,11 +17,12 @@ shopindex_table = Table('shopindex', metadata,
                         mysql_engine = 'InnoDB')
 
 shopinfo_table = Table('shopinfo',metadata,
-                       Clolumn('id',Integer ,primary_key=True),
-                       Clolumn('name',String(50)),
-                       Clolumn('address',String(50)),
-                       Clolumn('price',Integer),
-                       Clolumn('comment',Integer),
+                       Column('id',Integer ,primary_key=True),
+                       Column('name',String(50)),
+                       Column('address',String(50)),
+                       Column('price',Integer),
+                       Column('comment',Integer),
+                       Column('savedate',DateTime),
                        mysql_engine = 'InnoDB')
 
 def install(): 

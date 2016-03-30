@@ -61,6 +61,12 @@ def list2string(l):
             string = string + str(item)
     return string
 
+def md5(str):
+    import hashlib
+    m = hashlib.md5()  
+    m.update(str)
+    return m.hexdigest()
+
 '''
 从字符串中找出数字
 '''
@@ -69,13 +75,22 @@ def numfromString(s):
 
 def checkrepeat(item):
     conn,cur = connDB()
-    sql = "SELECT shopurl FROM shopindex WHERE shopurl = %s" 
+    sql = "SELECT hash FROM shopindex WHERE hash = %s" 
     df = cur.execute(sql,item)
     if df==0:
         return False
     else:
         return True
-    
+
+def checkdata(name,d):
+    conn,cur = connDB()
+    sql = "SELECT name,savedate FROM shopinfo WHERE name=%s AND savedate=%s"
+    df = cur.execute(sql,(name,d))
+    if df==0:
+        return False
+    else:
+        return True
+
 '''
 getsoup()和getshoplist()获取店铺的URL列表
 '''
@@ -101,8 +116,8 @@ def insertshoplist():
     conn,cur=connDB()
     for shoplist in getshoplist():
         shopurl = str(shoplist)
-        if checkrepeat(shopurl)==False:
-            sta=cur.execute("INSERT INTO shopindex(shopurl) VALUES (%s)",(shopurl))
+        if checkrepeat(md5(shopurl))==False:
+            sta=cur.execute("INSERT INTO shopindex(shopurl,hash) VALUES (%s,%s)",(shopurl,md5(shopurl)))
             if(sta==1):
                 print('data insert successed')
                 conn.commit()
@@ -146,16 +161,17 @@ def main():
     conn,cur=connDB()
     for tempurl in queryshoplist():
         item = gethtml(tempurl)
-        try:
-            shopname = getshopname(item)
-            address = getaddress(item)
-            price = getprice(item)
-            comment = getcomment(item)
-            cur.execute("INSERT INTO shopinfo(name,address,price,comment) VALUES (%s,%s,%s,%s)",(shopname,address,price,comment))
+        shopname = getshopname(item)
+        address = getaddress(item)
+        price = getprice(item)
+        comment = getcomment(item)
+        d = getcurDate()
+        if checkdata(shopname,d)==False:
+            cur.execute("INSERT INTO shopinfo(name,address,price,comment,savedate) VALUES (%s,%s,%s,%s,%s)",(shopname,address,price,comment,d))
             conn.commit()
-            print(tempurl,shopname,address,price,comment)
-        except:
-            print('error')
+            print(tempurl,shopname,address,price,comment,d)
+        else:
+            print('date repeat')
     connClose(conn.cur)
 
 
