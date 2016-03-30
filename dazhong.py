@@ -65,7 +65,7 @@ def list2string(l):
 从字符串中找出数字
 '''
 def numfromString(s):
-    return re.findall(r'(\w*[0-9]+)\w*',s)
+    return int(re.findall(r'(\w*[0-9]+)\w*',s)[0])
 
 '''
 getsoup()和getshoplist()获取店铺的URL列表
@@ -121,12 +121,14 @@ def getaddress(item):
 
 def getprice(item):
     tmp = list2string(BeautifulSoup(item,"html5lib").find_all("div",attrs={"class":"brief-info"})) 
-    return numfromString(str(BeautifulSoup(tmp,"html5lib").find_all("span")[0]))
+    return numfromString(str(BeautifulSoup(tmp,"html5lib").find_all("span")[2]))
 
 def getcomment(item):
     tmp = BeautifulSoup(item,"html5lib").find_all("span",attrs={"class":"sub-title"})
     return numfromString(str(tmp[1]))
 
+'''
+'''
 def main():
     for tempurl in queryshoplist():
         item = gethtml(tempurl)
