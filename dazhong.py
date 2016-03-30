@@ -4,6 +4,7 @@ import time
 import random
 import re
 from bs4 import BeautifulSoup
+
 baseurl = 'http://www.dianping.com/search/keyword/'
 sid = '1/'
 keyword = '0_蟹/p'
@@ -77,17 +78,33 @@ def queryshoplist():
     connClose(conn,cur)
     return shoplist
 
-for item in queryshoplist():
-    try:
-        shopname = BeautifulSoup(gethtml(item),"html5lib").h1.contents[0]
-        addresstring = list2string(BeautifulSoup(gethtml(item),"html5lib").find_all("span",attrs={"class":"item","itemprop":"street-address"}))
-        pricestring = list2string(BeautifulSoup(gethtml(item),"html5lib").find_all("div",attrs={"class":"brief-info"}))
-        price = BeautifulSoup(pricestring,"html5lib").find_all("span")
-        address = BeautifulSoup(addresstring,"html5lib").span['title']
-        comment = BeautifulSoup(gethtml(item),"html5lib").find_all("span",attrs={"class":"sub-title"})
-        
-        print(str(shopname),str(address),numfromString(str(price[0])),numfromString(str(comment[1])),getcurDate())
-    except:
-        print('error')
+def getshopname(item):
+    return str(BeautifulSoup(item,"html5lib").h1.contents[0])
+
+def getaddress(item):
+    tmp = list2string(BeautifulSoup(item,"html5lib").find_all("span",attrs={"class":"item","itemprop":"street-address"}))
+    return str(BeautifulSoup(tmp,"html5lib").span['title'])
+
+def getprice(item):
+    tmp = list2string(BeautifulSoup(item,"html5lib").find_all("div",attrs={"class":"brief-info"})) 
+    return numfromString(str(BeautifulSoup(tmp,"html5lib").find_all("span")[0]))
+
+def getcomment(item):
+    tmp = BeautifulSoup(item,"html5lib").find_all("span",attrs={"class":"sub-title"})
+    return numfromString(str(tmp[1]))
+
+def main():
+    for tempurl in queryshoplist():
+        item = gethtml(tempurl)
+        try:
+            shopname = getshopname(item)
+            address = getaddress(item)
+            price = getprice(item)
+            comment = getcomment(item)
+            print(tempurl,shopname,address,price,comment)
+        except:
+            print('error')
 
 
+if __name__=="__main__":
+    main()
