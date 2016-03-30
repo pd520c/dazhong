@@ -130,6 +130,7 @@ def getcomment(item):
 '''
 '''
 def main():
+    conn,cur=connDB()
     for tempurl in queryshoplist():
         item = gethtml(tempurl)
         try:
@@ -137,9 +138,12 @@ def main():
             address = getaddress(item)
             price = getprice(item)
             comment = getcomment(item)
+            cur.execute("INSERT INTO shopinfo(name,address,price,comment) VALUES (%s,%s,%s,%s)",(shopname,address,price,comment))
+            conn.commit()
             print(tempurl,shopname,address,price,comment)
         except:
             print('error')
+    connClose(conn.cur)
 
 
 if __name__=="__main__":
