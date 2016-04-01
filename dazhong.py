@@ -8,6 +8,7 @@ import pymysql
 import time
 import random
 import re
+import hashlib
 from bs4 import BeautifulSoup
 
 '''
@@ -61,10 +62,8 @@ def list2string(l):
             string = string + str(item)
     return string
 
-def md5(str):
-    import hashlib
-    m = hashlib.md5()  
-    m.update(str)
+def Tomd5(item):
+    m = hashlib.md5(item.encode('utf8'))  
     return m.hexdigest()
 
 '''
@@ -116,15 +115,15 @@ def insertshoplist():
     conn,cur=connDB()
     for shoplist in getshoplist():
         shopurl = str(shoplist)
-        if checkrepeat(md5(shopurl))==False:
-            sta=cur.execute("INSERT INTO shopindex(shopurl,hash) VALUES (%s,%s)",(shopurl,md5(shopurl)))
+        if checkrepeat(Tomd5(shopurl))==False:
+            sta=cur.execute("INSERT INTO shopindex(shopurl,hash) VALUES (%s,%s)",(shopurl,Tomd5(shopurl)))
             if(sta==1):
                 print('data insert successed')
                 conn.commit()
             else:
                 print('data insert failed')
         else:
-            print('data repeat')
+            print('shop repeat')
     connClose(conn,cur)
 
 '''
@@ -155,23 +154,46 @@ def getcomment(item):
     tmp = BeautifulSoup(item,"html5lib").find_all("span",attrs={"class":"sub-title"})
     return numfromString(str(tmp[1]))
 
+def getarea(item):
+    tmp = list2string(BeautifulSoup(item,"html5lib").find_all("div",attrs={"class":"breadcrumb"}))
+    tmp2 = str(BeautifulSoup(tmp,"html5lib").find_all("a")[1])
+    return str(BeautifulSoup(tmp2,"html5lib").a.contents[0])
+
+def getlocation(item):
+    tmp = list2string(BeautifulSoup(item,"html5lib").find_all("div",attrs={"class":"breadcrumb"}))
+    tmp2 = str(BeautifulSoup(tmp,"html5lib").find_all("a")[2])
+    return str(BeautifulSoup(tmp2,"html5lib").a.contents[0])
+
+
+def getshoptype(item):
+    tmp = list2string(BeautifulSoup(item,"html5lib").find_all("div",attrs={"class":"breadcrumb"}))
+    tmp2 = str(BeautifulSoup(tmp,"html5lib").find_all("a")[3])
+    return str(BeautifulSoup(tmp2,"html5lib").a.contents[0])
+
+
 '''
 '''
 def main():
     conn,cur=connDB()
     for tempurl in queryshoplist():
         item = gethtml(tempurl)
-        shopname = getshopname(item)
-        address = getaddress(item)
-        price = getprice(item)
-        comment = getcomment(item)
-        d = getcurDate()
-        if checkdata(shopname,d)==False:
-            cur.execute("INSERT INTO shopinfo(name,address,price,comment,savedate) VALUES (%s,%s,%s,%s,%s)",(shopname,address,price,comment,d))
-            conn.commit()
-            print(tempurl,shopname,address,price,comment,d)
-        else:
-            print('date repeat')
+        try:
+            shopname = getshopname(item)
+            address = getaddress(item)
+            price = getprice(item)
+            comment = getcomment(item)
+            d = getcurDate()
+            area = getarea(item)
+            location = getlocation(item)
+            shoptype = getshoptype(item)
+            if checkdata(shopname,d)==False:
+                cur.execute("INSERT INTO shopinfo(name,address,price,comment,savedate,area,location,shoptype) VALUES (%s,%s,%s,%s,%s,%s,%s,%s )",(shopname,address,price,comment,d,area,location,shoptype))
+                conn.commit()
+                print(tempurl,shopname,address,price,comment,d,area,location,shoptype)
+            else:
+                print('shopinfo repeat')
+        except:
+                print('error')
     connClose(conn.cur)
 
 
