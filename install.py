@@ -27,6 +27,7 @@ shopinfo_table = Table('shopinfo',metadata,
                        Column('price',Integer),
                        Column('comment',Integer),
                        Column('savedate',DateTime),
+                       Column('hashkey', String(300)),
                        mysql_engine = 'InnoDB')
 
 def install(): 

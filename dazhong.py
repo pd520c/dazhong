@@ -90,6 +90,16 @@ def checkdata(name,d):
     else:
         return True
 
+def checkhash(item):
+    conn,cur = connDB()
+    sql = "SELECT hashkey FROM shopinfo WHERE hashkey= %s"
+    df = cur.execute(sql,item)
+    if df==0:
+        return False
+    else:
+        return True
+
+
 '''
 getsoup()和getshoplist()获取店铺的URL列表
 '''
@@ -176,25 +186,26 @@ def getshoptype(item):
 def main():
     conn,cur=connDB()
     for tempurl in queryshoplist():
-        item = gethtml(tempurl)
-        try:
-            shopname = getshopname(item)
-            address = getaddress(item)
-            price = getprice(item)
-            comment = getcomment(item)
-            d = getcurDate()
-            area = getarea(item)
-            location = getlocation(item)
-            shoptype = getshoptype(item)
-            if checkdata(shopname,d)==False:
-                cur.execute("INSERT INTO shopinfo(name,address,price,comment,savedate,area,location,shoptype) VALUES (%s,%s,%s,%s,%s,%s,%s,%s )",(shopname,address,price,comment,d,area,location,shoptype))
+        d = getcurDate()
+        hashkey = Tomd5(tempurl + str(d))
+        if checkhash(hashkey) == False:
+            try:
+                item = gethtml(tempurl)
+                shopname = getshopname(item)
+                address = getaddress(item)
+                price = getprice(item)
+                comment = getcomment(item)
+                area = getarea(item)
+                location = getlocation(item)
+                shoptype = getshoptype(item)
+                cur.execute("INSERT INTO shopinfo(name,address,price,comment,savedate,area,location,shoptype,hashkey) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s )",(shopname,address,price,comment,d,area,location,shoptype,hashkey))
                 conn.commit()
                 print(tempurl,shopname,address,price,comment,d,area,location,shoptype)
-            else:
-                print('shopinfo repeat')
-        except:
+            except:
                 print('error')
-    connClose(conn.cur)
+        else:
+            print('shopinfo repeat')
+    connClose(conn,cur)
 
 
 if __name__=="__main__":
