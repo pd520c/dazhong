@@ -1,7 +1,0 @@
-sudo pip3 install requests
-sudo pip3 install pymysql
-sudo pip3 install BeautifulSoup4
-sudo pip3 install sqlalchemy
-sudo apt-get install phantomJS
-sudo aptitude install python python-dev python-distribute python-pip libcurl4-openssl-dev libxml2-dev libxslt1-dev python-lxml
-sudo pip pyspdier

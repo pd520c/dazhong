@@ -35,8 +35,8 @@ def connDB():
 数据库关闭
 '''
 def connClose(conn,cur):
-    cur.close();
-    conn.close();
+    cur.close()
+    conn.close()
 
 '''
 获取当天日期

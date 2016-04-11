@@ -14,15 +14,20 @@ session=Session()
 shopindex_table = Table('shopindex', metadata,
                         Column('id', Integer, primary_key=True),
                         Column('shopurl',String(200)),
+                        Column('hash',String(300)),
                         mysql_engine = 'InnoDB')
 
 shopinfo_table = Table('shopinfo',metadata,
                        Column('id',Integer ,primary_key=True),
                        Column('name',String(50)),
                        Column('address',String(50)),
+                       Column('area',String(50)),
+                       Column('location',String(50)),
+                       Column('shoptype',String(50)),
                        Column('price',Integer),
                        Column('comment',Integer),
                        Column('savedate',DateTime),
+                       Column('hashkey', String(300)),
                        mysql_engine = 'InnoDB')
 
 def install(): 
