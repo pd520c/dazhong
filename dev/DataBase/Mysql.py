@@ -1,5 +1,5 @@
 import pymysql
-class MysqlAction():
+class MysqlAction:
 	"""docstring for MysqlAction"""
 	def __init__(self, host, port, user, passwd, db, charset):
 		self.host = host
@@ -10,7 +10,7 @@ class MysqlAction():
 		self.charset = charset
 		
 
-	def connDB():
+	def connDB(self):
     conn = pymysql.connect(host = self.host,
                            port = self.passwd,
                            user = self.user,
@@ -20,6 +20,6 @@ class MysqlAction():
     cur = conn.cursor()
     return (conn,cur)
 
-	def connClose(conn,cur):
+	def connClose(self,conn,cur):
     cur.close()
     conn.close()
