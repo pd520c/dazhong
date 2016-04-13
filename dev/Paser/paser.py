@@ -22,7 +22,7 @@ class GetShopinfo:
 		self.item = item
 
 	def getshopname(self):
-    	return str(BeautifulSoup(self.item,"html5lib").h1.contents[0])
+		return str(BeautifulSoup(self.item,"html5lib").h1.contents[0])
 
 	def getaddress(self):
 	    tmp = list2string(BeautifulSoup(self.item,"html5lib").find_all("span",attrs={"class":"item","itemprop":"street-address"}))
