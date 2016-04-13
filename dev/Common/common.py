@@ -16,7 +16,7 @@ class CommonFun:
 		return response.text
 
 	
-
+	
 	def Tomd5(self,item):
 		m = hashlib.md5(item.encode('utf8'))  
 		return m.hexdigest()
