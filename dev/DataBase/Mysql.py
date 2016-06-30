@@ -61,6 +61,24 @@ class MysqlAction:
 	    if df==0:
 	        return False
 	    else:
+	        return True
+
+	def checkhash(self,item):
+	    conn,cur = self.connDB()
+	    sql = "SELECT hashkey FROM shopinfo WHERE hashkey= %s"
+	    df = cur.execute(sql,item)
+	    if df==0:
+	        return False
+	    else:
+	        return True
+
+	def checkrepeat(self,item):
+	    conn,cur = self.connDB()
+	    sql = "SELECT hash FROM shopindex WHERE hash = %s" 
+	    df = cur.execute(sql,item)
+	    if df==0:
+	        return False
+	    else:
 	        return True	 
 
     	

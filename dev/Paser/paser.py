@@ -1,21 +1,4 @@
 from bs4 import BeautifulSoup
-import re
-'''
-list转字符串
-'''
-def list2string(l):
-    string = ''
-    if isinstance(l,list) == True:
-        for item in l:
-            string = string + str(item)
-    return string
-
-'''
-从字符串中找出数字
-'''
-def numfromString(s):
-    return int(re.findall(r'(\w*[0-9]+)\w*',s)[0])
-
 class GetShopinfo:
 	"""docstring for GetShopinfo"""
 	def __init__(self, item):
